@@ -10,6 +10,7 @@ import pt.uminho.ceb.biosystems.merlin.web.controllers.ReactionsController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.ProteinsController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.GenesController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.MetabolitesController;
+import pt.uminho.ceb.biosystems.merlin.web.controllers.GenomeImportController;
 
 public class MerlinWebServer {
 
@@ -43,9 +44,13 @@ public class MerlinWebServer {
                     }));
                 });
 
-        // ─── Rotas ──────────────────────────────────────────────────────────────────
+        // routes
         app.get("/api/workspaces", WorkspaceController::getWorkspaces);
         app.post("/api/workspaces", WorkspaceController::createWorkspace);
+        app.delete("/api/workspaces/{name}", WorkspaceController::deleteWorkspace);
+        app.get("/api/workspaces/ncbi-search", GenomeImportController::searchNCBI);
+        app.post("/api/{workspace}/import-ncbi", GenomeImportController::importNCBI);
+        app.post("/api/{workspace}/import-fasta", GenomeImportController::importFasta);
         app.get("/api/{workspace}/stats", StatsController::getWorkspaceStats);
         app.get("/api/{workspace}/reactions", ReactionsController::getReactions);
         app.post("/api/{workspace}/reactions", ReactionsController::createReaction);
@@ -53,6 +58,12 @@ public class MerlinWebServer {
         app.delete("/api/{workspace}/reactions/{id}", ReactionsController::deleteReaction);
         app.get("/api/{workspace}/proteins", ProteinsController::getProteins);
         app.get("/api/{workspace}/genes", GenesController::getGenes);
+        app.get("/api/{workspace}/genes/statistics", GenesController::getGeneStats);
+        app.get("/api/{workspace}/genes/{id}/detail", GenesController::getGeneDetail);
+        app.post("/api/{workspace}/genes", GenesController::createGene);
+        app.put("/api/{workspace}/genes/{id}", GenesController::updateGene);
+        app.delete("/api/{workspace}/genes", GenesController::deleteAllGenes);
+        app.delete("/api/{workspace}/genes/{id}", GenesController::deleteGene);
         app.get("/api/{workspace}/metabolites", MetabolitesController::getMetabolites);
 
         app.start(8085);

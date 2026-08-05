@@ -8,14 +8,22 @@ import io.javalin.openapi.OpenApiResponse;
 
 import pt.uminho.ceb.biosystems.merlin.services.DatabaseServices;
 import pt.uminho.ceb.biosystems.merlin.services.ProjectServices;
+import pt.uminho.ceb.biosystems.merlin.services.implementation.DatabaseServiceEntityExporterBatch;
 import pt.uminho.ceb.biosystems.merlin.core.utilities.Enumerators.Compartments;
 import pt.uminho.ceb.biosystems.merlin.services.model.ModelCompartmentServices;
-
+import java.util.Set;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
+import java.io.File;
+
+
 public class WorkspaceController {
+
+    private static final Set<String> PROTECTED_WORKSPACES = Set.of("kegg", "gg");
 
     public static class WorkspaceRequest {
         public String name;
@@ -59,31 +67,35 @@ public class WorkspaceController {
                 return;
             }
 
-            // 1. Gera a BD
+            // 1. generate bd
             DatabaseServices.generateDatabase(name);
 
-            // Confirmação de que foi criada
+            // confirmation
             if (!DatabaseServices.getDatabasesAvailable().contains(name)) {
                 ctx.status(500).json(Map.of("error", "Failed to verify workspace creation."));
                 return;
             }
 
-            // 2. Injeta os dados base (Compartments INSIDE/OUTSIDE)
-            if (ModelCompartmentServices.getCompartmentByAbbreviation(name, Compartments.INSIDE.getAbbreviation()) == null) {
-                ModelCompartmentServices.insertNameAndAbbreviation(name, Compartments.INSIDE.getName().toString(), Compartments.INSIDE.getAbbreviation());
+            // 2. insert basic data (INSIDE/OUTSIDE compartments)
+            if (ModelCompartmentServices.getCompartmentByAbbreviation(name,
+                    Compartments.INSIDE.getAbbreviation()) == null) {
+                ModelCompartmentServices.insertNameAndAbbreviation(name, Compartments.INSIDE.getName().toString(),
+                        Compartments.INSIDE.getAbbreviation());
             }
-            if (ModelCompartmentServices.getCompartmentByAbbreviation(name, Compartments.OUTSIDE.getAbbreviation()) == null) {
-                ModelCompartmentServices.insertNameAndAbbreviation(name, Compartments.OUTSIDE.getName().toString(), Compartments.OUTSIDE.getAbbreviation());
+            if (ModelCompartmentServices.getCompartmentByAbbreviation(name,
+                    Compartments.OUTSIDE.getAbbreviation()) == null) {
+                ModelCompartmentServices.insertNameAndAbbreviation(name, Compartments.OUTSIDE.getName().toString(),
+                        Compartments.OUTSIDE.getAbbreviation());
             }
 
-            // 3. Associa a taxonomia (se fornecida)
+            // 3. associate taxonomy (if provided)
             Long taxonomyID = null;
             if (taxonomyIDStr != null && !taxonomyIDStr.isBlank()) {
                 taxonomyID = Long.parseLong(taxonomyIDStr);
                 ProjectServices.updateOrganismID(name, taxonomyID);
             }
 
-            // Retorna sucesso
+            // return success
             Map<String, Object> response = new HashMap<>();
             response.put("name", name);
             if (taxonomyID != null) {
@@ -96,6 +108,31 @@ public class WorkspaceController {
         } catch (Exception e) {
             e.printStackTrace();
             ctx.status(500).json(Map.of("error", "Error creating workspace: " + e.getMessage()));
+        }
+    }
+
+    @OpenApi(summary = "Delete a workspace", operationId = "deleteWorkspace", path = "/api/workspaces/{name}", methods = HttpMethod.DELETE, tags = {
+            "Workspaces" }, responses = {
+                    @OpenApiResponse(status = "204", description = "Workspace deleted successfully"),
+                    @OpenApiResponse(status = "404", description = "Workspace not found")
+            })
+    public static void deleteWorkspace(Context ctx) {
+        String name = ctx.pathParam("name");
+
+        try {
+            if(PROTECTED_WORKSPACES.contains(name)) {
+                ctx.status(403).json(Map.of("error", "Workspace is protected and cannot be deleted."));
+                return;
+            }
+
+            DatabaseServices.dropConnection(name);
+            DatabaseServices.dropDatabase(name);
+            FileUtils.deleteDirectory(new File(FileUtils.getWorkspaceFolderPath(name)));
+
+            ctx.status(200).json(Map.of("message", "Workspace deleted sucessfully."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).json(Map.of("error", "Error deleting workspace: " + e.getMessage()));
         }
     }
 }
