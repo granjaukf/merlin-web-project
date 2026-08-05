@@ -1,0 +1,19 @@
+# OS & IDEs
+.DS_Store
+.idea/
+*.class
+*.log
+*.iml
+.vscode/
+
+# Java/Maven (Backend)
+**/target/
+**/merlin-web-api/src/main/java/pt/uminho/ceb/biosystems/merlin/web/.env
+
+# Node/React (Frontend)
+**/node_modules/
+**/dist/
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
