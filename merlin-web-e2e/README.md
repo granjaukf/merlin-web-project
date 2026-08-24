@@ -49,6 +49,7 @@ O Playwright arranca automaticamente o backend (`merlin-web-api`) e o frontend (
 ## Notas
 
 - O workspace real `kegg` é usado apenas em modo leitura (teste de reactions).
-- Os testes criam workspaces com prefixo `e2e_` e apagam-nos no teardown.
+- Os testes criam workspaces com prefixo `e2e_` e apagam-nos no teardown; um `globalTeardown` adicional varre e apaga quaisquer `e2e_*` órfãos no fim de cada run, mesmo que um teste falhe.
 - O backend expõe um endpoint de delete de workspace (`DELETE /api/workspaces/{name}`) com proteção para workspaces reais (`kegg`, `gg`) — constante `PROTECTED_WORKSPACES` em `WorkspaceController.java`.
 - A fixture `tests/fixtures/genome.faa` usa cabeçalhos simples: o parser do Merlin usa o primeiro token do header FASTA como locus tag.
+- Descope consciente face ao design: os testes cobrem import + listagem de genes (não os fluxos completos de CRUD de genes nem o filtro por pathway em reactions), alinhado com os critérios de aceitação acordados.
