@@ -35,7 +35,7 @@ export async function importFasta(
   type = 'protein',
 ): Promise<void> {
   const form = new FormData();
-  form.append('file', fs.createReadStream(filePath));
+  form.append('file', fs.readFileSync(filePath), { filename: 'genome.faa' });
   const res = await fetch(
     `${BACKEND}/api/${encodeURIComponent(workspace)}/import-fasta?type=${type}&taxonomyID=${taxonomyID}`,
     { method: 'POST', body: form.getBuffer() as unknown as BodyInit, headers: form.getHeaders() },
