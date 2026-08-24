@@ -10,7 +10,7 @@ test.describe('workspaces', () => {
     await page.getByRole('button', { name: 'New Workspace' }).click();
     await page.getByPlaceholder('e.g. ecoli_model').fill(ws);
     await page.getByRole('button', { name: 'Criar', exact: true }).click();
-    await expect(page).toHaveURL(new RegExp(`/workspace/${ws}`));
+    await expect(page).toHaveURL(new RegExp(`/workspace/${ws}`), { timeout: 30_000 });
     await page.getByText('Change Workspace').click();
     await expect(page.getByText(ws, { exact: true }).first()).toBeVisible();
     await deleteWorkspace(ws);

@@ -11,8 +11,10 @@ const frontendPort = process.env.FRONTEND_PORT || '5173';
 
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './tests/global-setup.ts',
   globalTeardown: './tests/global-teardown.ts',
   fullyParallel: false,
+  workers: 1,
   retries: 2,
   timeout: 120_000,
   expect: { timeout: 15_000 },
