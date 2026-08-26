@@ -57,6 +57,11 @@ public class MerlinWebServer {
         app.put("/api/{workspace}/reactions/{id}", ReactionsController::updateReaction);
         app.delete("/api/{workspace}/reactions/{id}", ReactionsController::deleteReaction);
         app.get("/api/{workspace}/proteins", ProteinsController::getProteins);
+        app.get("/api/{workspace}/proteins/statistics", ProteinsController::getProteinStats);
+        app.get("/api/{workspace}/proteins/{id}/detail", ProteinsController::getProteinDetail);
+        app.post("/api/{workspace}/proteins", ProteinsController::createProtein);
+        app.put("/api/{workspace}/proteins/{id}", ProteinsController::updateProtein);
+        app.delete("/api/{workspace}/proteins/{id}", ProteinsController::deleteProtein);
         app.get("/api/{workspace}/genes", GenesController::getGenes);
         app.get("/api/{workspace}/genes/statistics", GenesController::getGeneStats);
         app.get("/api/{workspace}/genes/{id}/detail", GenesController::getGeneDetail);
@@ -65,6 +70,11 @@ public class MerlinWebServer {
         app.delete("/api/{workspace}/genes", GenesController::deleteAllGenes);
         app.delete("/api/{workspace}/genes/{id}", GenesController::deleteGene);
         app.get("/api/{workspace}/metabolites", MetabolitesController::getMetabolites);
+        app.get("/api/{workspace}/metabolites/statistics", MetabolitesController::getMetaboliteStats);
+        app.get("/api/{workspace}/metabolites/{id}/detail", MetabolitesController::getMetaboliteDetail);
+        app.post("/api/{workspace}/metabolites", MetabolitesController::createMetabolite);
+        app.put("/api/{workspace}/metabolites/{id}", MetabolitesController::updateMetabolite);
+        app.delete("/api/{workspace}/metabolites/{id}", MetabolitesController::deleteMetabolite);
 
         app.start(8085);
         System.out.println("Merlin Web Server started on http://localhost:8085");

@@ -1,9 +1,22 @@
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
-import { Database, ChevronLeft, ShieldCheck, CircleDotDashed, Monitor, Presentation } from 'lucide-react';
+import {
+    Database,
+    ChevronLeft,
+    ShieldCheck,
+    CircleDotDashed,
+    Monitor,
+    Presentation,
+    PanelLeftClose
+} from 'lucide-react';
 import merlinLogo from '../../assets/merlin_logo.png';
 
-export default function Sidebar() {
+interface SidebarProps {
+    collapsed?: boolean;
+    onToggleCollapse?: () => void;
+}
+
+export default function Sidebar({ collapsed = false, onToggleCollapse }: SidebarProps) {
     const { name } = useParams();
 
     const menuTree = [
@@ -36,108 +49,125 @@ export default function Sidebar() {
     ];
 
     return (
-        <div className="w-72 bg-slate-900 text-slate-300 flex flex-col h-full shadow-2xl z-20 shrink-0 font-sans select-none">
-            {/* Logo area */}
-            <div className="h-20 flex items-center justify-start px-6 bg-slate-950/50 backdrop-blur-sm border-b border-white/5 gap-3">
-                <img src={merlinLogo} alt="Merlin" className="h-8 object-contain" />
-                <span className="font-extrabold text-2xl tracking-tight text-white font-sans lowercase">merlin</span>
+        <aside
+            className={`bg-slate-900 text-slate-300 flex flex-col h-full shadow-2xl z-20 shrink-0 font-sans select-none transition-all duration-300 ease-in-out overflow-hidden ${
+                collapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-72 opacity-100'
+            }`}
+        >
+            {/* Header: Logo merlin + Botão de Recolher */}
+            <div className="h-16 flex items-center justify-between px-6 bg-slate-950/50 backdrop-blur-sm border-b border-white/5 shrink-0">
+                <div className="flex items-center gap-3">
+                    <img src={merlinLogo} alt="Merlin" className="h-7 object-contain" />
+                    <span className="font-extrabold text-xl tracking-tight text-white font-sans lowercase">merlin</span>
+                </div>
+                {onToggleCollapse && (
+                    <button
+                        onClick={onToggleCollapse}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+                        title="Esconder barra lateral"
+                    >
+                        <PanelLeftClose size={18} />
+                    </button>
+                )}
             </div>
 
             {/* Tree Navigation Container */}
             <div className="flex-1 overflow-y-auto py-6 px-4">
                 <div className="relative pl-2">
-                    
                     {/* Main vertical line from Workspace root */}
                     <div className="absolute left-[15px] top-8 bottom-4 w-px bg-slate-700/60"></div>
 
                     {/* Workspace Root Node (Database) */}
-                    <div className="flex items-center gap-2.5 py-2 relative">
-                        {/* Hook/Branch structure for root */}
+                    <div className="flex items-center gap-2.5 relative">
                         <div className="w-6 h-6 flex items-center justify-center relative shrink-0">
                             <div className="absolute left-[7px] w-3 h-px bg-slate-700/60"></div>
                             <div className="absolute left-[10px] w-2 h-2 rounded-full border border-blue-400/80 bg-slate-900 z-10"></div>
                         </div>
-                        <Database size={18} className="text-slate-200 fill-slate-800" />
-                        <span className="font-semibold text-slate-100 text-sm tracking-wide">{name || 'Workspace'}</span>
+                        <NavLink
+                            to={`/workspace/${name}`}
+                            end
+                            className={({ isActive }) =>
+                                `flex items-center gap-2.5 px-2 py-1 rounded-md text-sm font-semibold transition-all duration-150 -ml-2 select-none w-full ${
+                                    isActive
+                                        ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                                        : 'text-slate-100 hover:text-white hover:bg-slate-800/40'
+                                }`
+                            }
+                        >
+                            <Database size={18} className="text-slate-200 fill-slate-800 shrink-0" />
+                            <span className="tracking-wide truncate">{name || 'Workspace'}</span>
+                        </NavLink>
                     </div>
 
                     {/* Children of the Workspace */}
                     <div className="pl-6 flex flex-col gap-1">
                         {menuTree.map((node) => {
-                          const hasChildren = node.children && node.children.length > 0;
+                            const hasChildren = node.children && node.children.length > 0;
 
-                          return (
-                            <div key={node.label} className="relative">
-                              
-                              {/* Sub-tree vertical line (if node has children) */}
-                              {hasChildren && (
-                                <div className="absolute left-[11px] top-7 bottom-3 w-px bg-slate-700/60"></div>
-                              )}
+                            return (
+                                <div key={node.label} className="relative">
+                                    {hasChildren && (
+                                        <div className="absolute left-[11px] top-7 bottom-3 w-px bg-slate-700/60"></div>
+                                    )}
 
-                              {/* Parent Node Item */}
-                              <div className="flex items-center gap-2 py-1.5 relative">
-                                {/* Branch connector line to the parent node */}
-                                <div className="absolute left-[-15px] w-[18px] h-px bg-slate-700/60"></div>
-                                <div className="absolute left-[-8px] w-2 h-2 rounded-full border border-blue-400/80 bg-slate-900 z-10"></div>
+                                    <div className="flex items-center gap-2 py-1.5 relative">
+                                        <div className="absolute left-[-15px] w-[18px] h-px bg-slate-700/60"></div>
+                                        <div className="absolute left-[-8px] w-2 h-2 rounded-full border border-blue-400/80 bg-slate-900 z-10"></div>
 
-                                {node.path ? (
-                                  <NavLink
-                                    to={`/workspace/${name}/${node.path}`}
-                                    className={({ isActive }) =>
-                                      `flex items-center gap-2.5 px-2 py-1 rounded-md text-sm font-medium transition-all duration-150 ${
-                                        isActive
-                                          ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
-                                          : 'text-slate-400 hover:text-slate-100'
-                                      }`
-                                    }
-                                  >
-                                    <node.icon size={16} className="shrink-0" />
-                                    <span>{node.label}</span>
-                                  </NavLink>
-                                ) : (
-                                  <div className="flex items-center gap-2.5 px-2 py-1 text-slate-400 text-sm font-medium">
-                                    <node.icon size={16} className="shrink-0" />
-                                    <span>{node.label}</span>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Child Leaf Nodes */}
-                              {hasChildren && (
-                                <div className="pl-5 flex flex-col">
-                                  {node.children.map((child) => (
-                                    <div key={child.label} className="relative flex items-center py-1">
-                                      
-                                      {/* Branch connector line to the child */}
-                                      <div className="absolute left-[-14px] w-[14px] h-px bg-slate-700/60"></div>
-
-                                      <NavLink
-                                        to={`/workspace/${name}/${child.path}`}
-                                        className={({ isActive }) =>
-                                          `flex items-center gap-2.5 px-2 py-1 rounded-md text-xs font-medium w-full transition-all duration-150 ${
-                                            isActive
-                                              ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold'
-                                              : 'text-slate-500 hover:text-slate-200'
-                                          }`
-                                        }
-                                      >
-                                        <child.icon size={14} className="shrink-0" />
-                                        <span>{child.label}</span>
-                                      </NavLink>
+                                        {node.path ? (
+                                            <NavLink
+                                                to={`/workspace/${name}/${node.path}`}
+                                                className={({ isActive }) =>
+                                                    `flex items-center gap-2.5 px-2 py-1 rounded-md text-sm font-medium transition-all duration-150 ${
+                                                        isActive
+                                                            ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                                                            : 'text-slate-400 hover:text-slate-100'
+                                                    }`
+                                                }
+                                            >
+                                                <node.icon size={16} className="shrink-0" />
+                                                <span>{node.label}</span>
+                                            </NavLink>
+                                        ) : (
+                                            <div className="flex items-center gap-2.5 px-2 py-1 text-slate-400 text-sm font-medium">
+                                                <node.icon size={16} className="shrink-0" />
+                                                <span>{node.label}</span>
+                                            </div>
+                                        )}
                                     </div>
-                                  ))}
-                                </div>
-                              )}
 
-                            </div>
-                          );
+                                    {hasChildren && (
+                                        <div className="pl-5 flex flex-col">
+                                            {node.children.map((child) => (
+                                                <div key={child.label} className="relative flex items-center py-1">
+                                                    <div className="absolute left-[-14px] w-[14px] h-px bg-slate-700/60"></div>
+
+                                                    <NavLink
+                                                        to={`/workspace/${name}/${child.path}`}
+                                                        className={({ isActive }) =>
+                                                            `flex items-center gap-2.5 px-2 py-1 rounded-md text-xs font-medium w-full transition-all duration-150 ${
+                                                                isActive
+                                                                    ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold'
+                                                                    : 'text-slate-500 hover:text-slate-200'
+                                                            }`
+                                                        }
+                                                    >
+                                                        <child.icon size={14} className="shrink-0" />
+                                                        <span>{child.label}</span>
+                                                    </NavLink>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
                         })}
                     </div>
                 </div>
             </div>
 
             {/* Bottom info area */}
-            <div className="p-5 border-t border-white/5 bg-slate-950/30 backdrop-blur-sm">
+            <div className="p-5 border-t border-white/5 bg-slate-950/30 backdrop-blur-sm shrink-0">
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
@@ -160,6 +190,6 @@ export default function Sidebar() {
                     Change Workspace
                 </NavLink>
             </div>
-        </div>
+        </aside>
     );
 }

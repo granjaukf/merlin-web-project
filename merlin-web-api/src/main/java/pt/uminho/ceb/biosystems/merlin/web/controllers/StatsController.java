@@ -39,7 +39,9 @@ public class StatsController {
             List<Integer> proteinStats = ModelProteinsServices.getStats(workspace);
             stats.put("totalProteins", proteinStats.get(0));
             stats.put("totalEnzymes", proteinStats.get(1));
-            stats.put("totalMetabolites", ModelMetabolitesServices.getAllCompounds(workspace).size());
+            java.util.ArrayList<Integer> metTypes = new java.util.ArrayList<>(java.util.Arrays.asList(0, 0, 0, 1));
+            java.util.Map<Integer, String> metTypeMap = new java.util.HashMap<>();
+            stats.put("totalMetabolites", ModelMetabolitesServices.getMainTableData(workspace, 0, false, metTypes, metTypeMap).size());
             ctx.json(stats);
         } catch (Exception e) {
             e.printStackTrace();

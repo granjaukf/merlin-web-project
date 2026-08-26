@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Search, Plus, Pencil, Trash2, Eye, X } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Eye, X, HelpCircle } from 'lucide-react';
 
 export default function Reactions() {
     const { name } = useParams();
 
-    const [reactions, setReactions] = useState([]);
+    const [reactions, setReactions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     // Pagination
@@ -19,10 +19,10 @@ export default function Reactions() {
     const [inModelFilter, setInModelFilter] = useState('All');
 
     // Modals
-    const [selectedReaction, setSelectedReaction] = useState(null);
+    const [selectedReaction, setSelectedReaction] = useState<any>(null);
     const [activeTab, setActiveTab] = useState('reaction');
     const [showFormModal, setShowFormModal] = useState(false);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<any>({
         id: '',
         name: '',
         equation: '',
@@ -103,9 +103,9 @@ export default function Reactions() {
 
         const reactantsStr = parts[0];
         const productsStr = parts[1];
-        const metabolites = [];
+        const metabolites: any[] = [];
 
-        const parsePart = (str, coeffSign) => {
+        const parsePart = (str: string, coeffSign: number) => {
             str.split('+').forEach(m => {
                 const trimmed = m.trim();
                 if (!trimmed) return;
@@ -163,13 +163,13 @@ export default function Reactions() {
         setShowFormModal(true);
     };
 
-    const handleOpenEdit = (reaction) => {
+    const handleOpenEdit = (reaction: any) => {
         setFormMode('edit');
         setFormData({ ...reaction });
         setShowFormModal(true);
     };
 
-    const handleFormSubmit = async (e) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             if (formMode === 'insert') {
@@ -191,13 +191,13 @@ export default function Reactions() {
                 setReactions(reactions.map(r => r.id === formData.id ? formData : r));
             }
             setShowFormModal(false);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             alert(err.message);
         }
     };
 
-    const handleRemove = async (id) => {
+    const handleRemove = async (id: any) => {
         if (window.confirm('Are you sure you want to remove this reaction from the model?')) {
             try {
                 const res = await fetch(`http://localhost:8085/api/${name}/reactions/${id}`, {
@@ -205,14 +205,14 @@ export default function Reactions() {
                 });
                 if (!res.ok) throw new Error('Failed to delete reaction from DB');
                 setReactions(reactions.filter(r => r.id !== id));
-            } catch (err) {
+            } catch (err: any) {
                 console.error(err);
                 alert(err.message);
             }
         }
     };
 
-    const handleToggleInModel = async (id) => {
+    const handleToggleInModel = async (id: any) => {
         const reaction = reactions.find(r => r.id === id);
         if (!reaction) return;
         const updatedInModel = !reaction.inModel;
@@ -227,7 +227,7 @@ export default function Reactions() {
                 body: JSON.stringify({ inModel: updatedInModel })
             });
             if (!res.ok) throw new Error('Failed to save inModel state in DB');
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             // Rollback on error
             setReactions(reactions.map(r => r.id === id ? { ...r, inModel: !updatedInModel } : r));
@@ -235,7 +235,7 @@ export default function Reactions() {
         }
     };
 
-    const handleToggleReversible = async (id) => {
+    const handleToggleReversible = async (id: any) => {
         const reaction = reactions.find(r => r.id === id);
         if (!reaction) return;
         const updatedReversible = !reaction.reversible;
@@ -253,7 +253,7 @@ export default function Reactions() {
                 })
             });
             if (!res.ok) throw new Error('Failed to save reversibility in DB');
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             // Rollback on error
             setReactions(reactions.map(r => r.id === id ? { ...r, reversible: !updatedReversible } : r));
@@ -262,7 +262,7 @@ export default function Reactions() {
     };
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm flex flex-col h-full min-h-0 overflow-hidden ring-1 ring-slate-900/5">
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden ring-1 ring-slate-900/5">
             {/* Header */}
             <div className="px-6 py-5 border-b border-slate-200/80 flex justify-between items-center bg-white shrink-0">
                 <div>
@@ -352,30 +352,29 @@ export default function Reactions() {
 
                     {/* Table Container */}
                     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-                        <div className="overflow-auto flex-1 relative px-6 py-4">
-                            <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden ring-1 ring-slate-900/5">
-                                <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
-                                    <thead className="bg-slate-50/80 border-b border-slate-200">
-                                        <tr className="text-xs uppercase tracking-widest text-slate-500 font-bold">
-                                            <th className="px-3 py-3 w-[60px] text-center">Info</th>
-                                            <th className="px-5 py-3 w-[15%]">ID / Name</th>
-                                            <th className="px-5 py-3 w-[40%]">Equation</th>
-                                            <th className="px-5 py-3 w-[20%]">Pathway</th>
-                                            <th className="px-5 py-3 text-center w-[100px]">Reversible</th>
-                                            <th className="px-5 py-3 text-center w-[100px]">In Model</th>
-                                            <th className="px-5 py-3 text-center w-[110px]">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {currentReactions.length === 0 ? (
-                                            <tr>
-                                                <td colSpan="7" className="p-8 text-center">
-                                                    <div className="text-slate-400 mb-2">No reactions found</div>
-                                                    <div className="text-sm text-slate-500">Try adjusting your search or filters.</div>
-                                                </td>
+                        <div className="overflow-auto flex-1 relative px-6 py-4 flex flex-col">
+                            <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden ring-1 ring-slate-900/5 flex flex-col flex-1 min-h-[300px]">
+                                {currentReactions.length === 0 ? (
+                                    <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-2 p-12">
+                                        <HelpCircle size={40} className="text-slate-300" />
+                                        <p className="text-sm font-bold text-slate-600">No reactions found</p>
+                                        <p className="text-xs text-slate-500">Try adjusting your search or filters.</p>
+                                    </div>
+                                ) : (
+                                    <table className="w-full text-left border-collapse table-fixed min-w-[1000px]">
+                                        <thead className="bg-slate-50/80 border-b border-slate-200">
+                                            <tr className="text-xs uppercase tracking-widest text-slate-500 font-bold">
+                                                <th className="px-3 py-3 w-[60px] text-center">Info</th>
+                                                <th className="px-5 py-3 w-[15%]">ID / Name</th>
+                                                <th className="px-5 py-3 w-[40%]">Equation</th>
+                                                <th className="px-5 py-3 w-[20%]">Pathway</th>
+                                                <th className="px-5 py-3 text-center w-[100px]">Reversible</th>
+                                                <th className="px-5 py-3 text-center w-[100px]">In Model</th>
+                                                <th className="px-5 py-3 text-center w-[110px]">Actions</th>
                                             </tr>
-                                        ) : (
-                                            currentReactions.map((reaction, index) => (
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {currentReactions.map((reaction, index) => (
                                                 <tr key={index} className="hover:bg-teal-50/50 transition-colors group">
                                                     {/* Info Button */}
                                                     <td className="px-3 py-3.5 text-center">
@@ -432,10 +431,10 @@ export default function Reactions() {
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
                         </div>
 

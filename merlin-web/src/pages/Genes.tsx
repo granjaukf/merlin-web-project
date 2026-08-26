@@ -113,9 +113,7 @@ export default function Genes() {
       const data = await res.json();
       setDetailTabs(data);
       if (data) {
-        const keys = Object.keys(data).filter(k => k !== 'identifier').map((tabKey) => {
-          return tabKey;
-        });
+        const keys = Object.keys(data).filter(k => k !== 'identifier');
         if (keys.length > 0) {
           setActiveDetailTab(keys[0]);
         }
@@ -252,7 +250,7 @@ export default function Genes() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm flex flex-col h-full min-h-0 overflow-hidden ring-1 ring-slate-900/5 font-sans">
+    <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden ring-1 ring-slate-900/5 font-sans">
       {/* Header */}
       <div className="px-6 py-5 border-b border-slate-200/80 flex justify-between items-center bg-white shrink-0">
         <div>
@@ -375,10 +373,10 @@ export default function Genes() {
 
               {/* Table Container */}
               <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-                <div className="overflow-auto flex-1 relative px-6 py-4">
-                  <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden ring-1 ring-slate-900/5">
+                <div className="flex-1 min-h-0 relative px-6 py-4 flex flex-col">
+                  <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden ring-1 ring-slate-900/5 flex-1 flex flex-col min-h-0">
                     {filteredGenes.length === 0 ? (
-                      <div className="p-16 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
+                      <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-slate-400 gap-3">
                         <Dna size={48} className="text-slate-300 animate-bounce" />
                         <div>
                           <p className="font-bold text-slate-700 text-sm">No genes found</p>
@@ -388,7 +386,8 @@ export default function Genes() {
                         </div>
                       </div>
                     ) : (
-                      <table className="w-full text-left border-collapse table-fixed min-w-[900px]">
+                      <div className="overflow-auto flex-1">
+                        <table className="w-full text-left border-collapse table-fixed min-w-[900px]">
                         <thead className="bg-slate-50/80 border-b border-slate-200">
                           <tr className="text-xs uppercase tracking-widest text-slate-500 font-bold">
                             <th className="px-4 py-3 w-[60px] text-center">Info</th>
@@ -457,7 +456,8 @@ export default function Genes() {
                           ))}
                         </tbody>
                       </table>
-                    )}
+                    </div>
+                  )}
                   </div>
                 </div>
 
