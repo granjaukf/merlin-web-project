@@ -10,6 +10,7 @@ import pt.uminho.ceb.biosystems.merlin.web.controllers.ReactionsController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.ProteinsController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.GenesController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.MetabolitesController;
+import pt.uminho.ceb.biosystems.merlin.web.controllers.PathwaysController;
 import pt.uminho.ceb.biosystems.merlin.web.controllers.GenomeImportController;
 
 public class MerlinWebServer {
@@ -76,6 +77,9 @@ public class MerlinWebServer {
         app.post("/api/{workspace}/metabolites", MetabolitesController::createMetabolite);
         app.put("/api/{workspace}/metabolites/{id}", MetabolitesController::updateMetabolite);
         app.delete("/api/{workspace}/metabolites/{id}", MetabolitesController::deleteMetabolite);
+        app.get("/api/{workspace}/pathways", PathwaysController::getPathways);
+        app.get("/api/{workspace}/pathways/statistics", PathwaysController::getPathwayStats);
+        app.get("/api/{workspace}/pathways/{id}/detail", PathwaysController::getPathwayDetail);
 
         app.start(8085);
         System.out.println("Merlin Web Server started on http://localhost:8085");
