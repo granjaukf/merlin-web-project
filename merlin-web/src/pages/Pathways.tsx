@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Search, Eye, BarChart3, HelpCircle, X } from 'lucide-react';
+import { Search, Eye, BarChart3, HelpCircle, X, FileSpreadsheet } from 'lucide-react';
 
 export default function Pathways() {
   const { name } = useParams();
@@ -63,6 +63,19 @@ export default function Pathways() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentRows = filtered.slice(startIndex, startIndex + itemsPerPage);
 
+  const handleExportCSV = () => {
+    const headers = ['Code', 'Name', 'Reactions', 'Proteins'];
+    const rows = filtered.map(p => [p.code, p.name, p.numReactions, p.numProteins]);
+    const csvContent = "data:text/csv;charset=utf-8,"
+      + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", `pathways_${name}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleOpenDetail = async (p: any) => {
     setSelectedPathway(p);
     setDetailData(null);
@@ -120,6 +133,10 @@ export default function Pathways() {
                 className="w-[280px] px-3 py-2 outline-none text-slate-900 text-sm placeholder:text-slate-400"
               />
             </div>
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 rounded-lg text-xs font-bold transition-all shadow-sm"
+            ><FileSpreadsheet size={14} className="text-emerald-600" />Export CSV</button>
           </div>
 
           {/* Table */}
