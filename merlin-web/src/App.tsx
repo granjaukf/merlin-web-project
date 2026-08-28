@@ -7,6 +7,7 @@ import Reactions from './pages/Reactions';
 import Genes from './pages/Genes';
 import Proteins from './pages/Proteins';
 import Metabolites from './pages/Metabolites';
+import Pathways from './pages/Pathways';
 
 export default function App() {
   return (
@@ -19,10 +20,10 @@ export default function App() {
           <Route path="reactions" element={<Reactions />} />
           <Route path="proteins" element={<Proteins />} />
           <Route path="genes" element={<Genes />} />
-          <Route path="pathways" element={<div className="p-8 bg-white border border-slate-200 shadow-sm rounded-xl"><h2 className="text-xl font-bold text-slate-800">Pathways</h2><p className="text-slate-500 mt-2">Data will be loaded here...</p></div>} />
+          <Route path="pathways" element={<Pathways />} />
           <Route path="metabolites" element={<Metabolites />} />
           <Route path="enzymes" element={<div className="p-8 bg-white border border-slate-200 shadow-sm rounded-xl"><h2 className="text-xl font-bold text-slate-800">Enzymes</h2><p className="text-slate-500 mt-2">Data will be loaded here...</p></div>} />
-          <Route path="Compartments" element={<div className="p-8 bg-white border border-slate-200 shadow-sm rounded-xl"><h2 className="text-xl font-bold text-slate-800">Compartments</h2><p className="text-slate-500 mt-2">Data will be loaded here...</p></div>} />
+          <Route path="compartments" element={<div className="p-8 bg-white border border-slate-200 shadow-sm rounded-xl"><h2 className="text-xl font-bold text-slate-800">Compartments</h2><p className="text-slate-500 mt-2">Data will be loaded here...</p></div>} />
         </Route>
       </Routes>
     </BrowserRouter>
