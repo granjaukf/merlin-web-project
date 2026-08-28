@@ -3,7 +3,7 @@
 
 @theme {
   --font-sans: 'NewsGotT', 'News Gothic', 'NewsGoth BT', 'News Gothic MT', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: 'NewsGotT', 'News Gothic', 'NewsGoth BT', 'News Gothic MT', ui-monospace, monospace;
   /* Merlin Teal Colors */
   --color-brand-50: #f0fdfa;
   --color-brand-100: #ccfbf1;
