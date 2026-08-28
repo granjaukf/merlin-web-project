@@ -56,6 +56,7 @@ public class MerlinWebServer {
         app.post("/api/{workspace}/reactions", ReactionsController::createReaction);
         app.put("/api/{workspace}/reactions/{id}", ReactionsController::updateReaction);
         app.delete("/api/{workspace}/reactions/{id}", ReactionsController::deleteReaction);
+        app.get("/api/{workspace}/reactions/{id}/detail", ReactionsController::getReactionDetail);
         app.get("/api/{workspace}/proteins", ProteinsController::getProteins);
         app.get("/api/{workspace}/proteins/statistics", ProteinsController::getProteinStats);
         app.get("/api/{workspace}/proteins/{id}/detail", ProteinsController::getProteinDetail);

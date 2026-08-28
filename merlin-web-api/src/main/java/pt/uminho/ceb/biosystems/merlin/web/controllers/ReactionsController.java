@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class ReactionsController {
 
@@ -160,5 +161,68 @@ public class ReactionsController {
         } catch (Exception e) {
             ctx.status(500).result("Error removing reaction: " + e.getMessage());
         }
+    }
+
+    @OpenApi(
+        summary = "Obter detalhes de uma reação específica",
+        operationId = "getReactionDetail",
+        path = "/api/{workspace}/reactions/{id}/detail",
+        methods = HttpMethod.GET,
+        tags = {"Workspace Data"},
+        pathParams = {
+            @OpenApiParam(name = "workspace", required = true),
+            @OpenApiParam(name = "id", required = true, type = Integer.class)
+        },
+        responses = { @OpenApiResponse(status = "200") }
+    )
+    public static void getReactionDetail(Context ctx) {
+        String workspace = ctx.pathParam("workspace");
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        try {
+            Pair<Map<String,String>, List<List<List<String>>>> result =
+                ModelReactionsServices.getRowInfo(id, "", workspace);
+
+            List<List<List<String>>> tabs = result.getB();
+            Map<String, Object> response = new LinkedHashMap<>();
+
+            // Tab 0: metabolites (stoichiometry)
+            response.put("metabolites", safeGetList(tabs, 0));
+
+            // Tab 1: enzymes
+            response.put("enzymes", safeGetList(tabs, 1));
+
+            // Tab 2: properties
+            response.put("properties", safeGetList(tabs, 2));
+
+            // Tab 3: synonyms
+            response.put("synonyms", safeGetList(tabs, 3));
+
+            // Tab 4: pathways
+            response.put("pathways", safeGetList(tabs, 4));
+
+            // Tab 5: source
+            response.put("source", safeGetList(tabs, 5));
+
+            // Tab 6: db links
+            response.put("db links", safeGetList(tabs, 6));
+
+            // Tab 7: gene rules (optional)
+            if (tabs.size() > 7) {
+                response.put("gene rules", safeGetList(tabs, 7));
+            }
+
+            ctx.json(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Error fetching reaction detail: " + e.getMessage());
+        }
+    }
+
+    private static List<List<String>> safeGetList(List<List<List<String>>> tabs, int index) {
+        if (tabs == null || index >= tabs.size() || tabs.get(index) == null) {
+            return new ArrayList<>();
+        }
+        return tabs.get(index);
+    }
     }
 }
