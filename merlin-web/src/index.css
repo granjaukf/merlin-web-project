@@ -1,6 +1,23 @@
 @import "tailwindcss";
 @source "./";
 
+/* ── NewsGotT (News Gothic T) – Tipografia oficial UMinho ── */
+@font-face {
+  font-family: 'NewsGotT';
+  src: url('/fonts/n015003t.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NewsGotT';
+  src: url('/fonts/n015006t.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --font-sans: 'NewsGotT', 'News Gothic', 'NewsGoth BT', 'News Gothic MT', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: 'NewsGotT', 'News Gothic', 'NewsGoth BT', 'News Gothic MT', ui-monospace, monospace;
