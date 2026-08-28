@@ -32,7 +32,10 @@ export default function Reactions() {
         reversible: true,
         inModel: true
     });
-    const [formMode, setFormMode] = useState('insert'); // 'insert' or 'edit'
+  const [formMode, setFormMode] = useState('insert'); // 'insert' or 'edit'
+
+  const [detailData, setDetailData] = useState<any>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
     useEffect(() => {
         const fetchReactions = async () => {
@@ -49,6 +52,20 @@ export default function Reactions() {
         };
         fetchReactions();
     }, [name]);
+
+    const fetchReactionDetail = async (reaction: any) => {
+        setLoadingDetail(true);
+        setDetailData(null);
+        try {
+            const res = await fetch(`http://localhost:8085/api/${name}/reactions/${reaction.id}/detail`);
+            if (!res.ok) throw new Error('Failed to fetch detail');
+            setDetailData(await res.json());
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoadingDetail(false);
+        }
+    };
 
     // Unique pathways for the dropdown
     const uniquePathways = useMemo(() => {
@@ -261,6 +278,11 @@ export default function Reactions() {
         }
     };
 
+    const tabs = ['reaction', 'enzymes', 'properties', 'synonyms', 'pathways', 'source', 'db links'];
+    if (detailData?.['gene rules']?.length > 0) {
+        tabs.push('gene rules');
+    }
+
     return (
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden ring-1 ring-slate-900/5">
             {/* Header */}
@@ -379,7 +401,10 @@ export default function Reactions() {
                                                     {/* Info Button */}
                                                     <td className="px-3 py-3.5 text-center">
                                                         <button
-                                                            onClick={() => { setSelectedReaction(reaction); setActiveTab('reaction'); }}
+                                                            onClick={() => {
+                                                                setSelectedReaction(reaction);
+                                                                fetchReactionDetail(reaction);
+                                                            }}
                                                             className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                                                             title="View Detailed Info"
                                                         >
@@ -492,7 +517,7 @@ export default function Reactions() {
 
                         {/* Modal Content - Tabs Selection */}
                         <div className="flex border-b border-slate-200 bg-white text-sm shrink-0 overflow-x-auto">
-                            {['reaction', 'enzymes', 'properties', 'synonyms', 'pathways', 'source', 'db links'].map((tab) => (
+                            {tabs.map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
@@ -549,22 +574,27 @@ export default function Reactions() {
                             {activeTab === 'enzymes' && (
                                 <div className="space-y-4">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Associated Enzymes & EC Numbers</h4>
-                                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 divide-y divide-slate-100 text-sm">
-                                        <div className="py-2 flex items-center justify-between">
-                                            <div>
-                                                <span className="font-mono text-xs font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded ring-1 ring-teal-500/10">EC 1.2.1.51</span>
-                                                <h5 className="font-bold text-slate-800 mt-1">Pyruvate dehydrogenase (NADP+)</h5>
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">High Confidence</span>
+                                    {loadingDetail ? (
+                                        <div className="flex items-center justify-center h-32 text-slate-400">
+                                            <div className="w-6 h-6 border-2 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
                                         </div>
-                                        <div className="py-2 flex items-center justify-between">
-                                            <div>
-                                                <span className="font-mono text-xs font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded ring-1 ring-teal-500/10">EC 1.2.1.31</span>
-                                                <h5 className="font-bold text-slate-800 mt-1">Pyruvate dehydrogenase (cytochrome)</h5>
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded">predicted</span>
+                                    ) : detailData?.enzymes?.length > 0 ? (
+                                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 divide-y divide-slate-100 text-sm">
+                                            {detailData.enzymes.map((e: string[], idx: number) => (
+                                                <div key={idx} className="py-2 flex items-center justify-between">
+                                                    <div>
+                                                        <span className="font-mono text-xs font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded ring-1 ring-teal-500/10">{e[0]}</span>
+                                                        <h5 className="font-bold text-slate-800 mt-1">{e[1]}</h5>
+                                                    </div>
+                                                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${e[2] === 'true' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 bg-slate-100'}`}>
+                                                        {e[2] === 'true' ? 'In Model' : 'Not in Model'}
+                                                    </span>
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <p className="text-sm text-slate-400">No enzymes associated with this reaction.</p>
+                                    )}
                                 </div>
                             )}
 
@@ -591,12 +621,20 @@ export default function Reactions() {
 
                             {activeTab === 'synonyms' && (
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Common Synonyms</h4>
-                                    <ul className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 divide-y divide-slate-100 text-sm font-medium text-slate-700">
-                                        <li className="py-2">Pyruvate dehydrogenase reaction</li>
-                                        <li className="py-2">Acetyl-CoA:NAD+ oxidoreductase</li>
-                                        <li className="py-2">Pyruvate:NAD+ oxidoreductase (decarbonylating)</li>
-                                    </ul>
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Synonyms</h4>
+                                    {loadingDetail ? (
+                                        <div className="flex items-center justify-center h-32 text-slate-400">
+                                            <div className="w-6 h-6 border-2 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
+                                        </div>
+                                    ) : detailData?.synonyms?.length > 0 ? (
+                                        <ul className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                            {detailData.synonyms.map((s: string[], idx: number) => (
+                                                <li key={idx} className="py-2">{s[0]}</li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-slate-400">No synonyms available.</p>
+                                    )}
                                 </div>
                             )}
 
@@ -612,35 +650,66 @@ export default function Reactions() {
                             {activeTab === 'source' && (
                                 <div className="space-y-4">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Source Annotation</h4>
-                                    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm text-sm">
-                                        <p className="text-slate-600 leading-relaxed">
-                                            This reaction was loaded from the biological database reference <strong className="text-slate-800">KEGG</strong> during model initialization.
-                                        </p>
-                                        <div className="mt-3 text-xs font-bold text-slate-400">Source: {selectedReaction.source || 'KEGG'}</div>
-                                    </div>
+                                    {loadingDetail ? (
+                                        <div className="flex items-center justify-center h-32 text-slate-400">
+                                            <div className="w-6 h-6 border-2 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
+                                        </div>
+                                    ) : detailData?.source?.length > 0 ? (
+                                        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm text-sm">
+                                            <p className="text-slate-600 leading-relaxed">
+                                                This reaction was loaded from <strong className="text-slate-800">{detailData.source[0][0]}</strong>.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-slate-400">No source information available.</p>
+                                    )}
                                 </div>
                             )}
 
                             {activeTab === 'db links' && (
                                 <div className="space-y-4">
                                     <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Database Cross-References</h4>
-                                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3 text-sm">
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-bold text-slate-700">KEGG Reaction Link</span>
-                                            <a
-                                                href={`https://www.kegg.jp/dbget-bin/www_bget?rn:${selectedReaction.name || selectedReaction.id}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-teal-600 font-bold hover:underline"
-                                            >
-                                                {selectedReaction.name || selectedReaction.id} ↗
-                                            </a>
+                                    {loadingDetail ? (
+                                        <div className="flex items-center justify-center h-32 text-slate-400">
+                                            <div className="w-6 h-6 border-2 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-bold text-slate-700">MetaCyc Reaction Link</span>
-                                            <span className="text-slate-400">Not available</span>
+                                    ) : detailData?.['db links']?.length > 0 ? (
+                                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3 text-sm">
+                                            {detailData['db links'].map((link: string[], idx: number) => (
+                                                <div key={idx} className="flex items-center justify-between">
+                                                    <span className="font-bold text-slate-700">{link[0]}</span>
+                                                    {link[2] && link[2] !== 'null' ? (
+                                                        <a href={link[2]} target="_blank" rel="noopener noreferrer" className="text-teal-600 font-bold hover:underline">
+                                                            {link[1]} ↗
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-slate-400">{link[1] || 'Not available'}</span>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <p className="text-sm text-slate-400">No database links available.</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'gene rules' && (
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Gene-Protein-Reaction Rules</h4>
+                                    {loadingDetail ? (
+                                        <div className="flex items-center justify-center h-32 text-slate-400">
+                                            <div className="w-6 h-6 border-2 border-slate-200 border-t-teal-600 rounded-full animate-spin" />
+                                        </div>
+                                    ) : detailData?.['gene rules']?.length > 0 ? (
+                                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-2 text-sm font-mono">
+                                            {detailData['gene rules'].map((rule: string[], idx: number) => (
+                                                <div key={idx} className="py-2 px-3 bg-slate-50 rounded-lg text-slate-700">{rule[0]}</div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-slate-400">No GPR rules available for this reaction.</p>
+                                    )}
                                 </div>
                             )}
                         </div>
