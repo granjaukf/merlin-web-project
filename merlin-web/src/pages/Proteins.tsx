@@ -257,7 +257,7 @@ export default function Proteins() {
 
               <button
                 onClick={handleExportCSV}
-                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 rounded-lg text-xs font-bold transition-all shadow-xs"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 rounded-lg text-xs font-bold transition-all shadow-sm"
               ><FileSpreadsheet size={14} className="text-emerald-600" />Export CSV</button>
             </div>
           </div>

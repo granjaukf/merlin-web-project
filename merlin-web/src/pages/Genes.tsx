@@ -354,7 +354,7 @@ export default function Genes() {
                   <button
                     onClick={handleExportCSV}
                     disabled={genes.length === 0}
-                    className="px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 shadow-sm"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 rounded-lg text-xs font-bold transition-all shadow-sm disabled:opacity-50"
                   >
                     <FileSpreadsheet size={14} className="text-emerald-600" />
                     Export CSV
