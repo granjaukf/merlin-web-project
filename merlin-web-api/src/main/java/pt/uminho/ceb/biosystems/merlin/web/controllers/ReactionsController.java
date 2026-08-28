@@ -224,5 +224,4 @@ public class ReactionsController {
         }
         return tabs.get(index);
     }
-    }
 }
