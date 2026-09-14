@@ -5,6 +5,7 @@
 *.log
 *.iml
 .vscode/
+docs/
 
 # Java/Maven (Backend)
 **/target/
@@ -23,4 +24,3 @@ rebel.xml
 *.db
 *.h2.db
 *.trace.db
-

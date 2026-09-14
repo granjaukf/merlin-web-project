@@ -87,14 +87,14 @@ export default function Sidebar({ collapsed = false, onToggleCollapse }: Sidebar
                             to={`/workspace/${name}`}
                             end
                             className={({ isActive }) =>
-                                `flex items-center gap-2.5 px-2 py-1 rounded-md text-sm font-semibold transition-all duration-150 -ml-2 select-none w-full ${
+                                `flex items-center gap-2.5 px-2 py-1.5 rounded-md text-base font-semibold transition-all duration-150 -ml-2 select-none w-full ${
                                     isActive
                                         ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
                                         : 'text-slate-100 hover:text-white hover:bg-slate-800/40'
                                 }`
                             }
                         >
-                            <Database size={18} className="text-slate-200 fill-slate-800 shrink-0" />
+                            <Database size={20} className="text-slate-200 fill-slate-800 shrink-0" />
                             <span className="tracking-wide truncate">{name || 'Workspace'}</span>
                         </NavLink>
                     </div>
@@ -118,19 +118,19 @@ export default function Sidebar({ collapsed = false, onToggleCollapse }: Sidebar
                                             <NavLink
                                                 to={`/workspace/${name}/${node.path}`}
                                                 className={({ isActive }) =>
-                                                    `flex items-center gap-2.5 px-2 py-1 rounded-md text-sm font-medium transition-all duration-150 ${
+                                                    `flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-semibold transition-all duration-150 ${
                                                         isActive
                                                             ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
-                                                            : 'text-slate-400 hover:text-slate-100'
+                                                            : 'text-slate-300 hover:text-white hover:bg-slate-800/40'
                                                     }`
                                                 }
                                             >
-                                                <node.icon size={16} className="shrink-0" />
+                                                <node.icon size={18} className="shrink-0" />
                                                 <span>{node.label}</span>
                                             </NavLink>
                                         ) : (
-                                            <div className="flex items-center gap-2.5 px-2 py-1 text-slate-400 text-sm font-medium">
-                                                <node.icon size={16} className="shrink-0" />
+                                            <div className="flex items-center gap-2.5 px-2 py-1.5 text-slate-300 text-sm font-semibold">
+                                                <node.icon size={18} className="shrink-0" />
                                                 <span>{node.label}</span>
                                             </div>
                                         )}
@@ -145,14 +145,14 @@ export default function Sidebar({ collapsed = false, onToggleCollapse }: Sidebar
                                                     <NavLink
                                                         to={`/workspace/${name}/${child.path}`}
                                                         className={({ isActive }) =>
-                                                            `flex items-center gap-2.5 px-2 py-1 rounded-md text-xs font-medium w-full transition-all duration-150 ${
+                                                            `flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium w-full transition-all duration-150 ${
                                                                 isActive
-                                                                    ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold'
-                                                                    : 'text-slate-500 hover:text-slate-200'
+                                                                    ? 'bg-teal-500/10 text-teal-300 border border-teal-500/20 font-semibold'
+                                                                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/40'
                                                             }`
                                                         }
                                                     >
-                                                        <child.icon size={14} className="shrink-0" />
+                                                        <child.icon size={16} className="shrink-0" />
                                                         <span>{child.label}</span>
                                                     </NavLink>
                                                 </div>

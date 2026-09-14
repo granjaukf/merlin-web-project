@@ -190,7 +190,7 @@ export default function WorkspaceSelection() {
           <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight leading-tight">
             Metabolic Models <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-teal-200">Reconstruction</span>
           </h1>
-          <p className="text-slate-400 text-base lg:text-lg leading-relaxed mb-8 font-light max-w-xl">
+          <p className="text-slate-300 text-lg leading-relaxed mb-8 max-w-xl">
             merlin makes it easier to reconstruct genome-scale metabolic models. It is a simple, graphical and user-oriented solution that guides you along the entire curation process.
           </p>
           <div className="w-full max-w-xl relative bg-[#111417]/40 p-6 rounded-2xl border border-white/5 shadow-2xl backdrop-blur-sm">
@@ -204,13 +204,13 @@ export default function WorkspaceSelection() {
           <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
             <div>
               <h2 className="text-lg font-bold text-white tracking-tight">Workspaces</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Select or create a workspace</p>
+              <p className="text-sm text-slate-400 mt-0.5">Select or create a workspace</p>
             </div>
             <button
               onClick={() => setShowCreate(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 transition-colors rounded-lg text-xs font-bold shadow-md shadow-teal-500/10"
+              className="flex items-center gap-1.5 px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 transition-colors rounded-lg text-sm font-bold shadow-md shadow-teal-500/20"
             >
-              <Plus size={14} />
+              <Plus size={15} />
               New Workspace
             </button>
           </div>
@@ -252,17 +252,17 @@ export default function WorkspaceSelection() {
                 <div
                   key={ws}
                   onClick={() => navigate(`/workspace/${ws}`)}
-                  className="group flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 hover:border-teal-500/40 hover:bg-white/[0.04] rounded-xl transition-all duration-200 text-left cursor-pointer"
+                  className="group flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 hover:border-teal-500/40 hover:bg-white/[0.05] rounded-xl transition-all duration-200 text-left cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-slate-950 text-slate-500 rounded-lg group-hover:bg-teal-500 group-hover:text-slate-950 transition-colors shadow-inner">
                       <Database size={16} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold text-white text-sm group-hover:text-teal-400 transition-colors">{ws}</span>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-500 font-medium mt-0.5">
-                        <span className="flex items-center gap-1"><Beaker size={10} className="text-emerald-500" /> Model</span>
-                        <span className="flex items-center gap-1"><Network size={10} className="text-blue-500" /> Pathways</span>
+                      <span className="font-bold text-white text-base group-hover:text-teal-400 transition-colors">{ws}</span>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
+                        <span className="flex items-center gap-1"><Beaker size={11} className="text-emerald-500" />Model</span>
+                        <span className="flex items-center gap-1"><Network size={11} className="text-blue-500" />Pathways</span>
                       </div>
                     </div>
                   </div>
